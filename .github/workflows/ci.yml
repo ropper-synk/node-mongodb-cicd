@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Node.js CI/CD
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,5 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build Docker image
-        run: docker build -t node-mongodb-app .
+        run: docker build -t ropper757/node-mongodb-cicd:latest .
+
+      - name: Push Docker image
+        run: docker push ropper757/node-mongodb-cicd:latest
